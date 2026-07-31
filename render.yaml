@@ -1,0 +1,17 @@
+# Configuration de déploiement pour Render (https://render.com).
+# Render lit ce fichier pour créer et lancer le service automatiquement.
+services:
+  - type: web              # un service web (accessible via une adresse HTTPS)
+    name: velib-mcp
+    runtime: python
+    plan: free             # offre gratuite
+    # Installation des dépendances : on installe uv, puis on synchronise
+    # exactement les versions verrouillées dans uv.lock.
+    buildCommand: "pip install uv && uv sync --frozen --no-dev"
+    # Lancement : notre serveur en mode web (Render fournit la variable PORT).
+    startCommand: "uv run python -m velib_mcp.server"
+    envVars:
+      - key: MCP_TRANSPORT   # bascule le serveur en mode HTTP (et non stdio)
+        value: http
+      - key: PYTHON_VERSION  # même version que celle utilisée en local
+        value: "3.12.13"
